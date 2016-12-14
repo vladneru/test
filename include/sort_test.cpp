@@ -1,162 +1,177 @@
-#include <iostream> 
-#include <fstream> 
-#include <string> 
-#include <vector> 
+#include <stdio.h>
+#include <openssl/rsa.h>
+#include <curl/curl.h>
+#include <openssl/x509v3.h>
+#include <openssl/x509_vfy.h>
+#include <openssl/crypto.h>
+#include <openssl/lhash.h>
+#include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <openssl/x509.h>
+#include <openssl/pkcs12.h>
+#include <openssl/bio.h>
+#include <openssl/ssl.h>
+#include <cstdio> 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+#include <algorithm>
+#include <io.h>
+#include <fcntl.h>
+#include <sys\types.h>
+#include <sys\stat.h>
+#include <boost/filesystem.hpp>
+#include <algorithm>
+#include <sstream>
+#define BUFSIZE 1024
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 
-#include <iterator> 
-#include <algorithm> 
-#include <queue> 
-#include <memory>
 
+namespace bamthread
+{
+	typedef std::unique_ptr<boost::asio::io_service::work> asio_worker;
 
+	struct ThreadPool {
+		ThreadPool(size_t threads) :service(), working(new asio_worker::element_type(service)) {
+			while (threads--)
+			{
+				auto worker = boost::bind(&boost::asio::io_service::run, &(this->service));
+				g.add_thread(new boost::thread(worker));
+			}
+		}
 
-using namespace std;
+		template<class F>
+		void enqueue(F f) {
+			service.post(f);
+		}
 
-struct person {
-	string surname, name;
-	short age;
-	size_t size() const
+		~ThreadPool() {
+			working.reset(); 
+			g.join_all();
+			service.stop();
+		}
+
+	private:
+		boost::asio::io_service service; 
+		asio_worker working;
+		boost::thread_group g; 
+	};
+}
+
+struct Data
+{
+	char * buffer;
+	unsigned long long position;
+	unsigned long long size;
+};
+
+namespace Download {
+	size_t stream(char * ptr, size_t item_size, size_t item_count, void * stream)
 	{
-		return (surname.capacity()+name.capacity()+ sizeof(age)+2*sizeof(" "));
+		auto out_stream = (std::ostream *)stream;
+		size_t write_bytes = item_size * item_count;
+		out_stream->write(ptr, write_bytes);
+		return write_bytes;
 	}
-};
-
-bool operator <(const person& s1, const person& s2)
-{
-	return (s1.name < s2.name);
 }
 
-bool operator >(const person& s1, const person& s2)
-{
-	return (s1.name > s2.name);
-}
-
-istream & operator >> (istream & in, person & s)
-{
-	in >> s.surname >> s.name >> s.age;
-	return in;
-}
-ostream & operator<<(ostream & out, person const & s)
-{
-	out << s.surname << " " << s.name << " "  << s.age<<"\n";
-	return out;
-}
-
-
-
-struct A {
+class Client {
 public:
-	ifstream *f;
-	person s;
-	A(const person& s_, ifstream* f_) : s(s_), f(f_) {}
-};
-
-bool operator < (const A& s1, const A& s2)// оператор для структуры А 
-{
-	return (s1.s > s2.s);
-}
-
-
-class B {
-public:
-	B(string name_main_file, string out_file, size_t buff_size);
-	auto division()->void;
-	auto make_file(string name_file)->void;
-	auto file_sort()->void;
-	~B();
+	Client(std::string str);
+	auto Entry()->void;
+	void download_to(CURL *curl, std::string name, int i);
+	void aes_decrypt(int i);
 private:
-	string s_out, s_in;
-	size_t count_of_files;
-	vector<string> file_names;
-	vector<person> pers;
-	uint_fast64_t buffer;
+	std::string server, login, password, files, client_file, path;
+	std::vector<std::string> file_names_dir, direct, files_download, temp_files;
 };
 
-
-
-inline B::~B() {
-	//file_names.clear();
-	//file_names.shrink_to_fit();
-	//pers.shrink_to_fit();
+void Client::aes_decrypt(int i)
+{
+	int outlen, inlen;
+	std::string s_out = "C:\\" + path + "\\output\\" + files_download[i];
+	FILE *in = fopen(temp_files[i].c_str(), "rb"), *out = fopen(s_out.c_str(), "wb");
+	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
+	unsigned char key[32]; /* 256- битный ключ */
+	unsigned char iv[8]; /* вектор инициализации */
+	const EVP_CIPHER * cipher;
+	EVP_CIPHER_CTX ctx;
+	/* обнуляем структуру контекста */
+	EVP_CIPHER_CTX_init(&ctx);
+	/* выбираем алгоритм шифрования */
+	cipher = EVP_bf_ofb();
+	/* инициализируем контекст алгоритма */
+	EVP_DecryptInit(&ctx, cipher, key, iv);
+	/* шифруем данные */
+	for (;;)
+	{
+		inlen = fread(inbuf, 1, BUFSIZE, in);
+		if (inlen <= 0) break;
+		EVP_DecryptUpdate(&ctx, outbuf, &outlen, inbuf, inlen);
+		fwrite(outbuf, 1, outlen, out);
+	}
+	EVP_DecryptFinal(&ctx, outbuf, &outlen);
+	fwrite(outbuf, 1, outlen, out);
+	EVP_CIPHER_CTX_cleanup(&ctx);
+	fclose(in);
+	fclose(out);
 }
 
-inline B::B(string name_main_file, string out_file, size_t buff_size) :s_in(name_main_file), s_out(out_file), count_of_files(0), buffer(buff_size * 1024 * 1024*0.9) {
-	pers.reserve(buffer);
-	file_names.reserve(512);
-	division();
-};
-
-inline auto B::make_file(string name_file)->void {
-	file_names.push_back(name_file);
-	std::sort(pers.begin(), pers.end()/*, [&](person &A, person &B) {return A.name < B.name;}*/);
-	ofstream temp(name_file, ios::binary);
-	for (auto i : pers) if (i.surname != "") temp << i ;
-	temp.close();
-	pers.clear();
-}
-
-
-
-
-
-inline auto B::file_sort()->void {
-	priority_queue<A> end_sorting;
-
-	for (int i = 0; i < count_of_files; ++i) {
-		ifstream* f_ = new ifstream(file_names[i], ios::binary);
-		person temp_s;
-		*f_ >> temp_s;
-		A ff(temp_s, f_);
-		end_sorting.push(ff);
-	}
-
-	ofstream f12(s_out, ios::binary);
-	while (!end_sorting.empty()) {
-		A ff = end_sorting.top();
-		end_sorting.pop();
-		if (ff.s.surname != "") f12 << ff.s << endl;
-
-		if (!(*ff.f).eof())
-		{
-			*ff.f >> ff.s;
-			end_sorting.push(ff);
-		}
-		else {
-			(*(ff.f)).close();
-		}
-	}
-	f12.close();
-
-
-	for (int i = 0; i < file_names.size(); ++i) {
-		remove(file_names[i].c_str());
-	}
-
-}
-
-
-
-inline auto B::division()->void {
-	size_t i(0);
-	person chel;
-	ifstream file(s_in, ios::binary);
-	while (!file.eof()) {
-		file >> chel;
-		i += chel.size();
-		if (i<buffer) {
-			pers.push_back(chel);
-		}else {
-			count_of_files++;
-			make_file(to_string(count_of_files));
-			pers.push_back(chel);
-			i = chel.size();
-		}
-	}
+Client::Client(std::string str) : client_file(str) {
+	std::ifstream file(client_file);
+	getline(file, server);
+	getline(file, login);
+	getline(file, password);
+	getline(file, path);
+	std::string temp;
+	getline(file, temp);
+	std::istringstream iss(temp);
+	std::copy(std::istream_iterator<std::string>(iss),
+		std::istream_iterator<std::string>(),
+		std::back_inserter<std::vector<std::string> >(files_download));
 	file.close();
-	if (!pers.empty()) {
-		count_of_files++;
-		make_file(to_string(count_of_files));
+	Entry();
+}
+
+void Client::download_to(CURL *curl_, std::string name, int i) {
+	std::ofstream file_stream(name, std::ios::binary);
+	if (file_stream.is_open()) {
+		std::string path_server = server + "/encrypt_" + files_download[i];
+		curl_easy_setopt(curl_, CURLOPT_URL, path_server.c_str());
+		curl_easy_setopt(curl_, CURLOPT_HTTPAUTH, (int)CURLAUTH_BASIC);
+		curl_easy_setopt(curl_, CURLOPT_USERNAME, login.c_str());
+		curl_easy_setopt(curl_, CURLOPT_PASSWORD, password.c_str());
+		curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "GET");
+		curl_easy_setopt(curl_, CURLOPT_HEADER, 0L);
+		curl_easy_setopt(curl_, CURLOPT_WRITEDATA, (size_t)&file_stream);
+		curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, (size_t)Download::stream);
+		curl_easy_perform(curl_);
 	}
-	file_sort();
+}
+
+auto Client::Entry()->void {
+	CURL *curl_;
+	curl_ = curl_easy_init();
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+	curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
+	curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
+	curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
+	curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
+	curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
+
+	for (int i = 0; i < files_download.size(); i++) {
+		std::string t = "file" + std::to_string(i) + ".file";
+		temp_files.push_back(t);
+		download_to(curl_, t, i);
+	}
+
+	bamthread::ThreadPool tp(2);
+	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 0));
+	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 1));
 }
 
