@@ -80,9 +80,9 @@ namespace Download {
 	}
 }
 
-class Client {
+class Server {
 public:
-	Client(std::string str);
+	Server(std::string str);
 	auto Entry()->void;
 	void download_to(CURL *curl, std::string name, int i);
 	void aes_decrypt(int i);
@@ -91,7 +91,7 @@ private:
 	std::vector<std::string> file_names_dir, direct, files_download, temp_files;
 };
 
-void Client::aes_decrypt(int i)
+void Server::aes_decrypt(int i)
 {
 	int outlen, inlen;
 	std::string s_out = "C:\\" + path + "\\output\\" + files_download[i];
@@ -122,7 +122,7 @@ void Client::aes_decrypt(int i)
 	fclose(out);
 }
 
-Client::Client(std::string str) : client_file(str) {
+Server::Server(std::string str) : client_file(str) {
 	std::ifstream file(client_file);
 	getline(file, server);
 	getline(file, login);
@@ -138,7 +138,7 @@ Client::Client(std::string str) : client_file(str) {
 	Entry();
 }
 
-void Client::download_to(CURL *curl_, std::string name, int i) {
+void Server::download_to(CURL *curl_, std::string name, int i) {
 	std::ofstream file_stream(name, std::ios::binary);
 	if (file_stream.is_open()) {
 		std::string path_server = server + "/encrypt_" + files_download[i];
@@ -154,7 +154,7 @@ void Client::download_to(CURL *curl_, std::string name, int i) {
 	}
 }
 
-auto Client::Entry()->void {
+auto Server::Entry()->void {
 	CURL *curl_;
 	curl_ = curl_easy_init();
 	curl_global_init(CURL_GLOBAL_DEFAULT);
