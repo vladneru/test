@@ -19,13 +19,6 @@
 #include <string>
 #include <map>
 #include <algorithm>
-//#pragma comment(lib, "curllib_static.lib")
-#pragma comment(lib, "wldap32.lib")
-#pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "ssleay32.lib")
-//#pragma comment(lib, "openldap.lib")
-#pragma comment(lib, "libeay32.lib")
 #include <io.h>
 #include <fcntl.h>
 #include <sys\types.h>
