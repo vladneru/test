@@ -212,10 +212,3 @@ auto Client::Entry()->void {
 }
 
 
-
-void main() {
-	Client A("config");
-
-	system("pause");
-
-};
