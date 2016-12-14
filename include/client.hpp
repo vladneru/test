@@ -19,7 +19,7 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <io.h>
+#include <avr/io.h>
 #include <fcntl.h>
 #include <sys\types.h>
 #include <sys\stat.h>
