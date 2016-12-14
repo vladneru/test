@@ -12,45 +12,44 @@ cache:
 
 matrix:
     include:
-        - os: linux
-          compiler: gcc-5
-          env: BUILD_FROM_SOURCES="yes" COMPILER="g++-5" BUILD_TESTS="TRUE"
-        - os: linux
-          compiler: clang-3.6
-          env: BUILD_FROM_SOURCES="yes" COMPILER="clang++-3.6" BUILD_TESTS="TRUE"
         - os: osx
-          compiler: gcc-5
-          env: BUILD_FROM_SOURCES="yes" COMPILER="g++-5" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/ssl"
-        - os: osx
-          compiler: clang-3.6
-          env: BUILD_FROM_SOURCES="yes" COMPILER="clang++-3.6" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/ssl"
+          compiler: clang
         - os: linux
-          compiler: gcc-5
-          env: BUILD_FROM_SOURCES="no" COMPILER="g++-5" BUILD_TESTS="TRUE"
+          compiler: gcc
+          env: COMPILER_NAME=gcc CXX=g++-4.9 CC=gcc-4.9
+          addons:
+            apt:
+                packages:
+                    - g++-4.9
+                    - gcc-4.9
+                sources: *sources
         - os: linux
-          compiler: clang-3.6
-          env: BUILD_FROM_SOURCES="no" COMPILER="clang++-3.6" BUILD_TESTS="TRUE"
-        - os: osx
-          compiler: gcc-5
-          env: BUILD_FROM_SOURCES="no" COMPILER="clang++-3.6" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/opt/openssl"
-        - os: osx
-          compiler: clang-3.6
-          env: BUILD_FROM_SOURCES="no" COMPILER="g++-5" BUILD_TESTS="TRUE" OPENSSL_ROOT_DIR="/usr/local/opt/openssl"
-
-
-
-before_install:
-    # or another boost version
-    - sudo add-apt-repository ppa:apokluda/boost1.53 --yes
-    - sudo apt-get update
-
+          compiler: gcc
+          env: COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5
+          addons:
+            apt:
+                packages:
+                    - g++-5
+                    - gcc-5
+                sources: *sources
+        - os: linux
+          compiler: clang
+          env: COMPILER_NAME=clang CXX=clang++-3.7 CC=clang-3.7
+          addons:
+            apt:
+                packages:
+                    - clang-3.7
+                sources: *sources
+        - os: linux
+          compiler: clang
+          env: COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
+          addons:
+            apt:
+                packages:
+                    - clang-3.8
+                sources: *sources
 
 install:
-
-    # or another boost version
-    - sudo apt-get install libboost-system1.53-dev
-    - sudo apt-get install libboost-regex1.53-dev
-    - sudo apt-get install libboost-filesystem1.53-dev
     - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
     - mkdir -p "${DEPS_DIR}"
     - cd "${DEPS_DIR}"
@@ -66,15 +65,10 @@ install:
       else
         if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
       fi
-- mkdir build && cd build
-- if [ "$BUILD_FROM_SOURCES" == "yes" ]; then
-        ../tools/build_requirements.unix.sh;
-  else
-    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      sudo apt-get update;
-      sudo apt-get install libssl-dev libcurl4-openssl-dev;
-    else
-      brew install openssl curl pugixml;
-    fi;
-  fi;
- - cmake -DGLOBAL_PROJECT_NAME=test ..
+script:
+    - BUILD_DIR="${TRAVIS_BUILD_DIR}/build"
+    - mkdir -p "${BUILD_DIR}"
+    - cd "${BUILD_DIR}"
+    - cmake -DGLOBAL_PROJECT_NAME=test ..
+    - make
+    - make test ARGS="-VV"
