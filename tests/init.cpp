@@ -1,5 +1,5 @@
-#include "Client.hpp"
-#include "Server.hpp"
+#include "client.hpp"
+#include "server.hpp"
 
 
 
