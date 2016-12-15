@@ -15,7 +15,7 @@ option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests for webdavclient" ON)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ tests/)
-add_library(test STATIC ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp tests/init.cpp)
+add_library(test STATIC ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp tests/init.cpp)
 
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED)
@@ -33,7 +33,7 @@ elseif(MSVC)
     set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
 endif()
 
-add_executable(Examples ${CMAKE_CURRENT_SOURCE_DIR} examples/main.cpp)
+add_executable(Examples ${CMAKE_CURRENT_SOURCE_DIR}/examples/main.cpp)
 target_link_libraries(Examples ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
 
 if(BUILD_TESTS)
