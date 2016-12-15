@@ -14,8 +14,8 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests for webdavclient" ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ tests/ examples/)
-add_library(test STATIC ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp tests/main.cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ tests/)
+add_library(test STATIC ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp tests/main.cpp)
 
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED)
