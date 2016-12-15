@@ -1,5 +1,3 @@
-#ifndef CXXNET_UTILS_IO_H_
-#define CXXNET_UTILS_IO_H_
 #include <stdio.h>   
 #include <openssl/rsa.h>
 #include <curl/curl.h>
@@ -21,7 +19,6 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <dmlc/io.h>
 #include <fcntl.h>
 #include <sys\types.h>
 #include <sys\stat.h>
@@ -178,9 +175,9 @@ auto Client::Entry()->void {
 	for (int i = 0; i < file_names_dir.size(); i++) {
 
 		struct stat file_info;
-		int hd = _open(direct[i].c_str(), O_RDONLY);
-		fstat(hd, &file_info);
-		_close(hd);
+		FILE *hd = fopen(direct[i].c_str(), O_RDONLY);
+		fstat(fileno(hd), &file_info);
+		fclose(hd);
 
 		std::string file_out_name = aes_encrypt(i, direct[i]);
 		std::string path_server = server + "/" + file_out_name;
@@ -205,5 +202,4 @@ auto Client::Entry()->void {
 		}
 	}
 }
-#endif
 
