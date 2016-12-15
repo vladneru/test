@@ -13,7 +13,8 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME FALSE) 
 add_definitions( -DBOOST_ALL_NO_LIB ) # avoid LNK1104 libboost_thread on Windows: http://stackoverflow.com/a/28902261/122441
 find_package(Boost 1.54.0 COMPONENTS system log filesystem REQUIRED) 
-
+include_directories(${Boost_INCLUDE_DIRS}) 
+link_directories(${Boost_LIBRARY_DIRS})
 
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests for webdavclient" OFF)
