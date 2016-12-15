@@ -1,3 +1,4 @@
+#define __UNIX__
 #include <stdio.h>   
 #include <openssl/rsa.h>
 #include <curl/curl.h>
