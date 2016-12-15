@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
-#set(SERVICE "WebDav")
+#set(SERVICE "test")
 
-project(${SERVICE}Client)
+project(${SERVICE})
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,7 +12,7 @@ set(Boost_USE_STATIC_LIBS FALSE)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME FALSE) 
 add_definitions( -DBOOST_ALL_NO_LIB ) # avoid LNK1104 libboost_thread on Windows: http://stackoverflow.com/a/28902261/122441
-find_package(Boost 1.54.0 COMPONENTS system log filesystem REQUIRED) 
+find_package(Boost 1.54.0 COMPONENTS filesystem REQUIRED) 
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
 
@@ -40,7 +40,7 @@ target_link_libraries(WW ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
 
 if(BUILD_TESTS)
     enable_testing()
-    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
+    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/init.cpp)
     add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
     target_link_libraries(check ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
     add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
