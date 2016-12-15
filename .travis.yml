@@ -18,3 +18,4 @@ script:
   - mkdir build
   - cd build
   - cmake .. && make
+- ./init -s -r compact
