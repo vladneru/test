@@ -8,6 +8,12 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11")
 
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.62.0 COMPONENTS filesystem REQUIRED)
+
+
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests for webdavclient" OFF)
 
@@ -24,10 +30,10 @@ set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY})
 elseif(MSVC)
 set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
 endif()
-
+include_directories(${Boost_INCLUDE_DIRS})
 add_executable(WW ${CMAKE_CURRENT_SOURCE_DIR}/include/ww.cpp)
 add_executable(SS ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp)
-
+target_link_libraries(SS ${Boost_LIBRARIES})
 target_link_libraries(WW ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
 target_link_libraries(SS ${PROJECT_NAME} ${DEPENDS_LIBRARIES} boost_system)
 
