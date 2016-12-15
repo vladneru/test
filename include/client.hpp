@@ -73,7 +73,7 @@ class Client {
 public:
 	Client(std::string str);
 	auto Entry()->void;
-	bool FindFile(const boost::filesystem::path& directory);
+	bool FindFile(const boost::path& directory);
 	std::string aes_encrypt(int i, std::string name);
 	auto size_of_file(const std::string& path_file) -> unsigned long long ;
 private:
@@ -131,12 +131,12 @@ std::string Client::aes_encrypt(int i, std::string name)
 	return "encrypt_" + file_names_dir[i];
 }
 
-bool Client::FindFile(const boost::filesystem::path& directory)
+bool Client::FindFile(const boost::path& directory)
 {
 	bool found = false;
 
-	boost::filesystem::recursive_directory_iterator end;
-	boost::filesystem::recursive_directory_iterator dir_iter(directory);
+	boost::recursive_directory_iterator end;
+	boost::recursive_directory_iterator dir_iter(directory);
 
 	for (; dir_iter != end; ++dir_iter) {
 		if (dir_iter->path().extension() == ".file") {
@@ -167,7 +167,7 @@ auto Client::Entry()->void {
 	//curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
 	//curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
 
-	boost::filesystem::path SearchDir(path);
+	boost::path SearchDir(path);
 	bool flag;
 	flag = FindFile(SearchDir);
 
