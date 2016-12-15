@@ -27,9 +27,11 @@ endif()
 
 add_executable(Server ${CMAKE_CURRENT_SOURCE_DIR}/include/server.hpp)
 add_executable(Client ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp)
+add_executable(SS ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp)
 
 target_link_libraries(Server ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
 target_link_libraries(Client ${PROJECT_NAME} ${DEPENDS_LIBRARIES} boost_system)
+target_link_libraries(SS ${PROJECT_NAME} ${DEPENDS_LIBRARIES} boost_system)
 
 if(BUILD_TESTS)
     enable_testing()
