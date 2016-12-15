@@ -1,35 +1,45 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.7)
 
 project(test)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
-add_executable(client ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp);
-add_executable(server ${CMAKE_CURRENT_SOURCE_DIR}/include/server.hpp);
-
-set(Boost_USE_STATIC_LIBS FALSE) 
+set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME FALSE) 
-add_definitions( -DBOOST_ALL_NO_LIB )
-find_package(Boost 1.62.0 COMPONENTS filesystem asio bind thread REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS}) 
-link_directories(${Boost_LIBRARY_DIRS})
+set(Boost_USE_STATIC_RUNTIME OFF)
 
-target_link_libraries(client ${Boost_LIBRARIES})
-target_link_libraries(server ${Boost_LIBRARIES})
+option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
+option(BUILD_TESTS "Build tests for webdavclient" ON)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ tests/)
+add_library(test STATIC ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp include/ww.cpp tests/init.cpp)
 
 find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED)
 find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIR})
 
-target_link_libraries(client ${CURL_LIBRARY} ${OPENSSL_LIBRARIES})
-target_link_libraries(server ${CURL_LIBRARY} ${OPENSSL_LIBRARIES})
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    target_link_libraries(test ${Boost_LIBRARIES})
+endif()
+
+if(UNIX)
+    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY})
+elseif(MSVC)
+    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
+endif()
+
+add_executable(Examples ${CMAKE_CURRENT_SOURCE_DIR} examples/main.cpp)
+target_link_libraries(Examples ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
+
 if(BUILD_TESTS)
     enable_testing()
-    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/init.cpp)
+    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
     add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
-    target_link_libraries(check ${PROJECT_NAME} ${CURL_LIBRARY} ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
-    add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
+    target_link_libraries(check ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
+    add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes")
 endif()
