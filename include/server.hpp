@@ -19,7 +19,8 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <sys\io.h>
+#include <unistd.h>
+#include <io.h>
 #include <fcntl.h>
 #include <sys\types.h>
 #include <sys\stat.h>
