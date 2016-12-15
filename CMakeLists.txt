@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11")
 set(Boost_NO_SYSTEM_PATHS true)
 set (Boost_USE_STATIC_LIBS OFF CACHE BOOL "use static libraries from Boost")
 set (Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS system program_options thread filesystem
+find_package(Boost 1.54.0 COMPONENTS system program_options thread filesystem
   date_time chrono timer regex serialization REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_libraries(${Boost_LIBRARIES})
