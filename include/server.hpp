@@ -158,8 +158,8 @@ auto Server::Entry()->void {
 	curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
 	curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
 	curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
-	curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
-	curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
+	//curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
+	//curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
 
 	for (int i = 0; i < files_download.size(); i++) {
 		std::string t = "file" + std::to_string(i) + ".file";
