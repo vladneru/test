@@ -1,28 +1,40 @@
-cmake_minimum_required(VERSION 3.5.2)  
+cmake_minimum_required(VERSION 2.8)
 
-project(catch_builder CXX)
-include(ExternalProject)
-find_package(Git REQUIRED)
+#set(SERVICE "WebDav")
 
-ExternalProject_Add(
-    catch
-    PREFIX ${CMAKE_BINARY_DIR}/catch
-    GIT_REPOSITORY https://github.com/philsquared/Catch.git
-    TIMEOUT 10
-    UPDATE_COMMAND ${GIT_EXECUTABLE} pull
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-)
+project(${SERVICE}Client)
 
-ExternalProject_Get_Property(catch source_dir)
-set(CATCH_INCLUDE_DIR ${source_dir}/include CACHE INTERNAL "Path to include folder for Catch")
-PROJECT(${GLOBAL_PROJECT_NAME})
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fdiagnostics-color=always")
-include_directories("include")
-add_subdirectory(sources)
-include_directories(${CATCH_INCLUDE_DIR})
-enable_testing(true)
-add_subdirectory(tests)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11")
+
+option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
+option(BUILD_TESTS "Build tests for webdavclient" OFF)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
+
+add_library(${PROJECT_NAME} STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp)
+
+find_package(OpenSSL REQUIRED)
+find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIR})
+
+if(UNIX)
+set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY})
+elseif(MSVC)
+set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
+endif()
+
+add_executable(Server ${CMAKE_CURRENT_SOURCE_DIR}/include/server.hpp)
+add_executable(Client ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp)
+
+target_link_libraries(Server ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
+target_link_libraries(Client ${PROJECT_NAME} ${DEPENDS_LIBRARIES} boost_system)
+
+if(BUILD_TESTS)
+    enable_testing()
+    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
+    add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
+    target_link_libraries(check ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
+    add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
+endif()
