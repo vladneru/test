@@ -20,7 +20,6 @@
 #include <map>
 #include <algorithm>
 #include <fcntl.h>
-#include <stat.h>
 #include <boost/filesystem.hpp>
 #include <algorithm>
 #include <functional>
@@ -81,6 +80,7 @@ public:
 	auto Entry()->void;
 	bool FindFile(const boost::filesystem::path& directory);
 	std::string aes_encrypt(int i, std::string name);
+	auto size(const std::string& path_file) -> unsigned long long ;
 private:
 	std::string server, login, password, path, client_file;
 	std::vector<std::string> file_names_dir, direct, encrypt_files_path;
@@ -95,6 +95,12 @@ Client::Client(std::string str) : client_file(str) {
 	file.close();
 	Entry();
 }
+
+auto Client::size(const std::string& path_file) -> unsigned long long 
+		{
+			std::ifstream file(path_file, std::ios::binary | std::ios::ate);
+			return (unsigned long long)file.tellg();
+		}
 
 
 std::string Client::aes_encrypt(int i, std::string name)
@@ -173,14 +179,13 @@ auto Client::Entry()->void {
 
 	for (int i = 0; i < file_names_dir.size(); i++) {
 
-		struct stat file_info;
-		FILE *hd = fopen(direct[i].c_str(), O_RDONLY);
-		fstat(fileno(hd), &file_info);
-		fclose(hd);
+		
+		
 
 		std::string file_out_name = aes_encrypt(i, direct[i]);
 		std::string path_server = server + "/" + file_out_name;
 		std::ifstream file_stream(encrypt_files_path[i], std::ios::binary);
+		auto size = size(encrypt_files_path[i]);
 		if (file_stream.is_open()) {
 			Data response = { 0, 0, 0 };
 
@@ -192,7 +197,7 @@ auto Client::Entry()->void {
 			curl_easy_setopt(curl_, CURLOPT_READDATA, (size_t)&file_stream);
 			curl_easy_setopt(curl_, CURLOPT_READFUNCTION, (size_t)stream);
 
-			curl_easy_setopt(curl_, CURLOPT_INFILESIZE_LARGE, (curl_off_t)file_info.st_size);
+			curl_easy_setopt(curl_, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
 
 			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, (size_t)&response);
 			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, (size_t)buffer);
