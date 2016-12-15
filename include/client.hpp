@@ -20,18 +20,7 @@
 #include <map>
 #include <algorithm>
 #include <fcntl.h>
-
-#ifndef BOOST_FILESYSTEM_FILESYSTEM_HPP
-#define BOOST_FILESYSTEM_FILESYSTEM_HPP
-
-#  include <boost/filesystem/config.hpp>
-#  include <boost/filesystem/path.hpp>
-#  include <boost/filesystem/operations.hpp>
-#  include <boost/filesystem/convenience.hpp>
-#  include <boost/filesystem/string_file.hpp>
-
-#endif  // BOOST_FILESYSTEM_FILESYSTEM_HPP 
-
+#include <boost/filesystem.hpp>
 #include <algorithm>
 #include <functional>
 #include <openssl/rsa.h>
