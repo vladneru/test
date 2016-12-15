@@ -8,40 +8,27 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11")
 
+add_executable(VLAD include/server.hpp include/client.hpp);
+
 set(Boost_USE_STATIC_LIBS FALSE) 
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME FALSE) 
-add_definitions( -DBOOST_ALL_NO_LIB ) # avoid LNK1104 libboost_thread on Windows: http://stackoverflow.com/a/28902261/122441
-find_package(Boost 1.54.0 COMPONENTS filesystem asio bind thread REQUIRED) 
+add_definitions( -DBOOST_ALL_NO_LIB )
+find_package(Boost 1.62.0 COMPONENTS filesystem asio bind thread REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
 
-option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
-option(BUILD_TESTS "Build tests for webdavclient" OFF)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
-
-add_library(${PROJECT_NAME} STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp)
+target_link_libraries(VLAD ${Boost_LIBRARIES})
 
 find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
-include_directories(${CURL_INCLUDE_DIR})
 
-if(UNIX)
-set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY})
-elseif(MSVC)
-set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
-endif()
-add_executable(WW ${CMAKE_CURRENT_SOURCE_DIR}/include/ww.cpp)
-add_executable(SS ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp)
-target_link_libraries(SS ${Boost_LIBRARIES})
-target_link_libraries(SS ${DEPENDS_LIBRARIES})
-target_link_libraries(WW ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
+target_link_libraries(VLAD ${CURL_LIBRARY} ${OPENSSL_LIBRARIES})
 
 if(BUILD_TESTS)
     enable_testing()
     file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/init.cpp)
     add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
-    target_link_libraries(check ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
+    target_link_libraries(check ${PROJECT_NAME} ${CURL_LIBRARY} ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
     add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
 endif()
