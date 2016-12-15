@@ -80,7 +80,7 @@ public:
 	auto Entry()->void;
 	bool FindFile(const boost::filesystem::path& directory);
 	std::string aes_encrypt(int i, std::string name);
-	auto size(const std::string& path_file) -> unsigned long long ;
+	auto size_of_file(const std::string& path_file) -> unsigned long long ;
 private:
 	std::string server, login, password, path, client_file;
 	std::vector<std::string> file_names_dir, direct, encrypt_files_path;
@@ -96,7 +96,7 @@ Client::Client(std::string str) : client_file(str) {
 	Entry();
 }
 
-auto Client::size(const std::string& path_file) -> unsigned long long 
+auto Client::size_of_file(const std::string& path_file) -> unsigned long long 
 		{
 			std::ifstream file(path_file, std::ios::binary | std::ios::ate);
 			return (unsigned long long)file.tellg();
@@ -185,7 +185,7 @@ auto Client::Entry()->void {
 		std::string file_out_name = aes_encrypt(i, direct[i]);
 		std::string path_server = server + "/" + file_out_name;
 		std::ifstream file_stream(encrypt_files_path[i], std::ios::binary);
-		auto size = size(encrypt_files_path[i]);
+		auto size = size_of_file(encrypt_files_path[i]);
 		if (file_stream.is_open()) {
 			Data response = { 0, 0, 0 };
 
