@@ -106,7 +106,7 @@ auto Client::size_of_file(const std::string& path_file) -> unsigned long long
 std::string Client::aes_encrypt(int i, std::string name)
 {
 	int outlen, inlen;
-	std::string name_out = "C:\\" + path + "\\" + "encrypt_" + file_names_dir[i];
+	std::string name_out = path + "\\" + "encrypt_" + file_names_dir[i];
 	encrypt_files_path.push_back(name_out);
 	FILE *in = fopen(name.c_str(), "rb"), *out = fopen(name_out.c_str(), "wb");
 	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
@@ -172,7 +172,7 @@ auto Client::Entry()->void {
 	//curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
 	//curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
 
-	boost::filesystem::path SearchDir("C:\\" + path);
+	boost::filesystem::path SearchDir(path);
 	bool flag;
 	flag = FindFile(SearchDir);
 
