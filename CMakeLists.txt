@@ -25,11 +25,10 @@ elseif(MSVC)
 set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
 endif()
 
-add_executable(Server ${CMAKE_CURRENT_SOURCE_DIR}/include/server.hpp)
-add_executable(Client ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp)
+add_executable(WW ${CMAKE_CURRENT_SOURCE_DIR}/include/ww.cpp)
 add_executable(SS ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp)
 
-target_link_libraries(Server ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
+target_link_libraries(WW ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
 target_link_libraries(SS ${PROJECT_NAME} ${DEPENDS_LIBRARIES} boost_system)
 
 if(BUILD_TESTS)
