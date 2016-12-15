@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-add_executable(test ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp);
-add_executable(test ${CMAKE_CURRENT_SOURCE_DIR}/include/server.hpp);
+add_executable(client ${CMAKE_CURRENT_SOURCE_DIR}/include/client.hpp);
+add_executable(server ${CMAKE_CURRENT_SOURCE_DIR}/include/server.hpp);
 
 set(Boost_USE_STATIC_LIBS FALSE) 
 set(Boost_USE_MULTITHREADED ON)
@@ -18,13 +18,14 @@ find_package(Boost 1.62.0 COMPONENTS filesystem asio bind thread REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
 
-target_link_libraries(test ${Boost_LIBRARIES})
+target_link_libraries(client ${Boost_LIBRARIES})
+target_link_libraries(server ${Boost_LIBRARIES})
 
 find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
 
-target_link_libraries(test ${CURL_LIBRARY} ${OPENSSL_LIBRARIES})
-
+target_link_libraries(client ${CURL_LIBRARY} ${OPENSSL_LIBRARIES})
+target_link_libraries(server ${CURL_LIBRARY} ${OPENSSL_LIBRARIES})
 if(BUILD_TESTS)
     enable_testing()
     file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/init.cpp)
