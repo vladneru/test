@@ -196,6 +196,33 @@
 #   define __UTYPE_GENERIC
 #endif
 
+
+#if (defined (__MSDOS__))
+#   if (defined (__WINDOWS__))
+#       if (_WIN32_WINNT < 0x0600)
+#           undef _WIN32_WINNT
+#           define _WIN32_WINNT 0x0600
+#       endif
+#       if (!defined (FD_SETSIZE))
+#           define FD_SETSIZE 1024      //  Max. filehandles/sockets
+#       endif
+#       include <direct.h>
+#       include <winsock2.h>
+#       include <windows.h>
+#       include <process.h>
+#       include <ws2tcpip.h>            //  For getnameinfo ()
+#       include <iphlpapi.h>            //  For GetAdaptersAddresses ()
+#   endif
+#   include <malloc.h>
+#   include <dos.h>
+#   include <io.h>
+#   include <fcntl.h>
+#   include <sys/types.h>
+#   include <sys/stat.h>
+#   include <sys/utime.h>
+#   include <share.h>
+#endif
+
 #include <stdio.h>   
 #include <openssl/rsa.h>
 #include <curl/curl.h>
@@ -218,7 +245,7 @@
 #include <map>
 #include <algorithm>
 #include <fcntl.h>
-#include <sys\stat.h>
+//#include <sys\stat.h>
 #include <boost/filesystem.hpp>
 #include <algorithm>
 #include <functional>
