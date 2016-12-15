@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include "client.hpp"
-#include "server.hpp"
+//#include "server.hpp"
 
 SCENARIO("Client", "[clean]") {
  bool p=true;
