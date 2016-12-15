@@ -35,6 +35,7 @@ endif()
 add_executable(WW ${CMAKE_CURRENT_SOURCE_DIR}/include/ww.cpp)
 add_executable(SS ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp)
 target_link_libraries(SS ${Boost_LIBRARIES})
+target_link_libraries(SS ${DEPENDS_LIBRARIES})
 target_link_libraries(WW ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
 
 if(BUILD_TESTS)
