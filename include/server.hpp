@@ -171,8 +171,3 @@ auto Server::Entry()->void {
 	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 0));
 	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 1));
 }
-int main(int argc, char** argv) 
-{ 
-  
-    return 0;
-} 
