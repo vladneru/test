@@ -169,8 +169,8 @@ auto Client::Entry()->void {
 	curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
 	curl_easy_setopt(curl_, CURLOPT_UPLOAD, 1L);
 	curl_easy_setopt(curl_, CURLOPT_PUT, 1L);
-	curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
-	curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
+	//curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
+	//curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
 
 	boost::filesystem::path SearchDir("C:\\" + path);
 	bool flag;
