@@ -12,7 +12,7 @@ set(Boost_USE_STATIC_LIBS FALSE)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME FALSE) 
 add_definitions( -DBOOST_ALL_NO_LIB ) # avoid LNK1104 libboost_thread on Windows: http://stackoverflow.com/a/28902261/122441
-find_package(Boost 1.54.0 COMPONENTS filesystem REQUIRED) 
+find_package(Boost 1.54.0 COMPONENTS filesystem asio bind thread REQUIRED) 
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
 
