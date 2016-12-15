@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.62.0 COMPONENTS filesystem regex)
+find_package(Boost 1.62.0 COMPONENTS filesystem)
 
 
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
@@ -35,7 +35,6 @@ add_executable(WW ${CMAKE_CURRENT_SOURCE_DIR}/include/ww.cpp)
 add_executable(SS ${CMAKE_CURRENT_SOURCE_DIR}/include/ss.cpp)
 target_link_libraries(SS ${Boost_LIBRARIES})
 target_link_libraries(WW ${PROJECT_NAME} ${DEPENDS_LIBRARIES} pthread)
-target_link_libraries(SS ${PROJECT_NAME} ${DEPENDS_LIBRARIES} boost_system)
 
 if(BUILD_TESTS)
     enable_testing()
