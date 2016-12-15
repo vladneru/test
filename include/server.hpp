@@ -1,5 +1,3 @@
-#ifndef CXXNET_UTILS_IO_H_
-#define CXXNET_UTILS_IO_H_
 #include <stdio.h>
 #include <openssl/rsa.h>
 #include <curl/curl.h>
@@ -21,7 +19,6 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <dmlc/io.h>
 #include <fcntl.h>
 #include <sys\types.h>
 #include <sys\stat.h>
@@ -176,4 +173,3 @@ auto Server::Entry()->void {
 	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 0));
 	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 1));
 }
-#endif
