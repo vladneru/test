@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-project(test)
+project(tester)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,7 +15,7 @@ option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests for webdavclient" ON)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ tests/)
-add_library(test STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp tests/main.cpp)
+add_library(tester STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp tests/main.cpp)
 
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED)
@@ -24,7 +24,7 @@ include_directories(${CURL_INCLUDE_DIR})
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    target_link_libraries(test ${Boost_LIBRARIES})
+    target_link_libraries(tester ${Boost_LIBRARIES})
 endif()
 
 if(UNIX)
