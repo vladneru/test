@@ -23,7 +23,7 @@ find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
-add_executable(progname client.cpp) 
+add_executable(progname ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp) 
 target_link_libraries(progname ${Boost_LIBRARIES})
 
 if(UNIX)
