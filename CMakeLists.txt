@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
@@ -29,10 +29,7 @@ if(UNIX)
 elseif(MSVC)
     set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
 endif()
-
- add_executable(vv ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp)
- target_link_libraries(vv ${PROJECT_NAME} ${DEPENDS_LIBRARIES} ${Boost_LIBRARIES})
-
+target_link_libraries (${PROJECT_NAME} ${DEPENDS_LIBRARIES} ${Boost_LIBRARIES})
 if(BUILD_TESTS)
     enable_testing()
     file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
