@@ -19,7 +19,7 @@ add_library(tester STATIC ${CMAKE_CURRENT_SOURCE_DIR}/tests/main.cpp)
 
 set(SOURCES examples/main.cpp include/client.hpp)
 find_package(OpenSSL REQUIRED)
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS filesystem REQUIRED)
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
