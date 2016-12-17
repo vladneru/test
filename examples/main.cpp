@@ -1,4 +1,4 @@
-#include <../include/client.cpp>
+#include <client.cpp>
 
 int main()
 {
