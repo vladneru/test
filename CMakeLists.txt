@@ -23,6 +23,8 @@ find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
+add_executable(progname client.cpp) 
+target_link_libraries(progname ${Boost_LIBRARIES})
 
 if(UNIX)
     set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY})
