@@ -30,7 +30,7 @@ elseif(MSVC)
     set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
 endif()
 
-add_executable(Examples ${CMAKE_CURRENT_SOURCE_DIR} examples/main.cpp sources/client.cpp)
+add_executable(Examples ${CMAKE_CURRENT_SOURCE_DIR} examples/main.cpp include/client.hpp)
 target_link_libraries(Examples ${PROJECT_NAME} ${DEPENDS_LIBRARIES} ${Boost_LIBRARIES})
 
 if(BUILD_TESTS)
