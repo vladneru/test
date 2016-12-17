@@ -23,7 +23,7 @@ find_package(Boost COMPONENTS filesystem REQUIRED)
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
-
+link_directories(${Boost_LIBRARY_DIR})
 if(UNIX)
     set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY})
 elseif(MSVC)
