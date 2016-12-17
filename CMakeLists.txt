@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.6)
 
 project(tester)
 
@@ -14,7 +14,7 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 option(BUILD_SHARED_LIBS "Build shared instead of static library" OFF)
 option(BUILD_TESTS "Build tests for webdavclient" ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ tests/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sources/ tests/)
 add_library(tester STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp tests/main.cpp)
 
 find_package(OpenSSL REQUIRED)
@@ -29,6 +29,9 @@ if(UNIX)
 elseif(MSVC)
     set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
 endif()
+
+ add_executable(vv ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp)
+ target_link_libraries(vv ${PROJECT_NAME} ${DEPENDS_LIBRARIES} ${Boost_LIBRARIES})
 
 if(BUILD_TESTS)
     enable_testing()
