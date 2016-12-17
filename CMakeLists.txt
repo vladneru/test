@@ -35,7 +35,7 @@ target_link_libraries(Examples ${PROJECT_NAME} ${DEPENDS_LIBRARIES} ${Boost_LIBR
 
 if(BUILD_TESTS)
     enable_testing()
-    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
+    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/init.cpp)
     add_executable(init ${${PROJECT_NAME}_TEST_SOURCES})
     target_link_libraries(init ${PROJECT_NAME} ${DEPENDS_LIBRARIES} ${Boost_LIBRARIES})
     add_test(NAME init COMMAND init "-s" "-r" "compact" "--use-colour" "yes")
