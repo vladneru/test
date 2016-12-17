@@ -25,13 +25,13 @@ include_directories(${Boost_INCLUDE_DIRS})
   
 
 if(UNIX)
-    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} {Boost_LIBRARIES})
+    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} )
 elseif(MSVC)
-    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} {Boost_LIBRARIES} ws2_32)
+    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
 endif()
 
 add_executable(Examples ${CMAKE_CURRENT_SOURCE_DIR}/examples/main.cpp)
-target_link_libraries(Examples ${PROJECT_NAME} ${DEPENDS_LIBRARIES})
+target_link_libraries(Examples ${PROJECT_NAME} ${DEPENDS_LIBRARIES} {Boost_LIBRARIES})
 
 if(BUILD_TESTS)
     enable_testing()
