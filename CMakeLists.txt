@@ -21,16 +21,13 @@ find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED)
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
-
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    target_link_libraries(tester ${Boost_LIBRARIES})
-endif()
+include_directories(${Boost_INCLUDE_DIRS})
+  
 
 if(UNIX)
-    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY})
+    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} {Boost_LIBRARIES})
 elseif(MSVC)
-    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ws2_32)
+    set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} {Boost_LIBRARIES} ws2_32)
 endif()
 
 add_executable(Examples ${CMAKE_CURRENT_SOURCE_DIR}/examples/main.cpp)
