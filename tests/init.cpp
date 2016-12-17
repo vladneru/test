@@ -3,6 +3,6 @@
 
 SCENARIO("Client", "[clean]") {
  bool p=true;
-  #Client A("config");
+ // #Client A("config");
   REQUIRE(p==true);
 }
