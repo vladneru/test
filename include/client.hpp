@@ -82,13 +82,17 @@ private:
 };
 
 Client::Client(std::string str) : client_file(str) {
+	
 	std::ifstream file(client_file);
+	if (file.is_open()){
 	getline(file, server);
 	getline(file, login);
 	getline(file, password);
 	getline(file, path);
 	file.close();
-	std::cout<<path<<std::endl;
+	std::cout<<path<<std::endl;}else{
+	std::cout<<"WTF"<<std::endl;
+	}
 	Entry();
 }
 
