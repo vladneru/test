@@ -88,6 +88,7 @@ Client::Client(std::string str) : client_file(str) {
 	getline(file, password);
 	getline(file, path);
 	file.close();
+	std::cout<<path<<std::endl;
 	Entry();
 }
 
