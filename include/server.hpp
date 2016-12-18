@@ -48,15 +48,15 @@ namespace bamthread
 		}
 
 		~ThreadPool() {
-			working.reset(); 
+			working.reset();
 			g.join_all();
 			service.stop();
 		}
 
 	private:
-		boost::asio::io_service service; 
+		boost::asio::io_service service;
 		asio_worker working;
-		boost::thread_group g; 
+		boost::thread_group g;
 	};
 }
 
@@ -91,7 +91,7 @@ private:
 void Server::aes_decrypt(int i)
 {
 	int outlen, inlen;
-	std::string s_out = path + "\\output\\" + files_download[i];
+	std::string s_out = path + "/out/" + files_download[i];
 	FILE *in = fopen(temp_files[i].c_str(), "rb"), *out = fopen(s_out.c_str(), "wb");
 	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
 	unsigned char key[32]; /* 256- битный ключ */
@@ -117,6 +117,7 @@ void Server::aes_decrypt(int i)
 	EVP_CIPHER_CTX_cleanup(&ctx);
 	fclose(in);
 	fclose(out);
+	remove(temp_files[i].c_str());
 }
 
 Server::Server(std::string str) : client_file(str) {
@@ -138,7 +139,7 @@ Server::Server(std::string str) : client_file(str) {
 void Server::download_to(CURL *curl_, std::string name, int i) {
 	std::ofstream file_stream(name, std::ios::binary);
 	if (file_stream.is_open()) {
-		std::string path_server = server + "/encrypt_" + files_download[i];
+		std::string path_server = server + "/" + files_download[i];
 		curl_easy_setopt(curl_, CURLOPT_URL, path_server.c_str());
 		curl_easy_setopt(curl_, CURLOPT_HTTPAUTH, (int)CURLAUTH_BASIC);
 		curl_easy_setopt(curl_, CURLOPT_USERNAME, login.c_str());
@@ -149,6 +150,7 @@ void Server::download_to(CURL *curl_, std::string name, int i) {
 		curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, (size_t)Download::stream);
 		curl_easy_perform(curl_);
 	}
+	file_stream.close();
 }
 
 auto Server::Entry()->void {
@@ -158,16 +160,15 @@ auto Server::Entry()->void {
 	curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
 	curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
 	curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
-	//curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, FALSE);
-	//curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, FALSE);
+
 
 	for (int i = 0; i < files_download.size(); i++) {
-		std::string t = "file" + std::to_string(i) + ".file";
+		std::string t = path + "/temp/" + files_download[i];
 		temp_files.push_back(t);
 		download_to(curl_, t, i);
 	}
 
 	bamthread::ThreadPool tp(2);
-	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 0));
-	tp.enqueue(boost::bind(&Client::aes_decrypt, this, 1));
+	tp.enqueue(boost::bind(&Server::aes_decrypt, this, 0));
+	tp.enqueue(boost::bind(&Server::aes_decrypt, this, 1));
 }
