@@ -91,7 +91,7 @@ private:
 void Server::aes_decrypt(int i)
 {
 	int outlen, inlen;
-	std::string s_out = "C:\\" + path + "\\output\\" + files_download[i];
+	std::string s_out = path + "\\output\\" + files_download[i];
 	FILE *in = fopen(temp_files[i].c_str(), "rb"), *out = fopen(s_out.c_str(), "wb");
 	unsigned char inbuf[BUFSIZE], outbuf[BUFSIZE];
 	unsigned char key[32]; /* 256- битный ключ */
