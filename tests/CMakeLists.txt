@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.7.8)
 project(${CMAKE_PROJECT_NAME}_test)
 
-file(GLOB SOURCES *.cpp)
+file(GLOB SOURCES init.cpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${DEPENDS_LIBRARIES} ${Boost_LIBRARIES})
 
