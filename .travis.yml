@@ -17,4 +17,6 @@ matrix:
 script:
   - mkdir build
   - cd build
-  - cmake .. && make
+   - cmake -DGLOBAL_PROJECT_NAME=tester ..
+    - make
+    - make test ARGS="-VV"
