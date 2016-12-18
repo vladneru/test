@@ -285,6 +285,8 @@ auto Client::Entry()->void {
 
 					curl_easy_perform(curl_);
 				}
+				file_stream.close();
+				remove(encrypt_files_path[i].c_str());
 			}
 		}
 	}
