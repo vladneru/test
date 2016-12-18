@@ -25,7 +25,6 @@
 #pragma comment(lib, "ssleay32.lib")
 #pragma comment(lib, "libeay32.lib")
 #include <fcntl.h>
-#include <sys\stat.h>
 #include <boost/filesystem.hpp>
 #include <algorithm>
 #include <functional>
